@@ -11,4 +11,12 @@
     <artifactId>aliyun-sms-sdk</artifactId>
     <description>阿里云短信sdk封装</description>
 
+    <dependencies>
+        <!-- 阿里云短信 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>${aliyun-msg-sdk.version}</version>
+        </dependency>
+    </dependencies>
 </project>
