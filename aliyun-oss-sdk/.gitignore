@@ -1,0 +1,53 @@
+# IntelliJ project files
+.idea/
+*.iml
+*.ipr
+*.iws
+**/rebel.xml
+out
+gem
+*.bak
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Eclipse project files
+.classpath
+.project
+.settings/
+
+# Package Files #
+/**/target/
+*.iml
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# MacOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+
+# Maven files
+target/
+
+# Apollo
+apollo/
+
+# Jrebel
+rebel.xml
+*.factorypath

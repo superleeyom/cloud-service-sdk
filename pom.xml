@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.leeyom</groupId>
+    <artifactId>cloud-service-sdk</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>aliyun-sms-sdk</module>
+        <module>tencent-lbs-sdk</module>
+        <module>tencent-cos-sdk</module>
+        <module>aliyun-oss-sdk</module>
+    </modules>
+
+
+</project>
