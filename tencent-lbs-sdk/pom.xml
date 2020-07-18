@@ -9,6 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tencent-lbs-sdk</artifactId>
+    <packaging>jar</packaging>
     <description>腾讯地图sdk封装</description>
+    <version>0.0.1-SNAPSHOT</version>
 
 </project>

@@ -10,13 +10,26 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>aliyun-oss-sdk</artifactId>
     <description>阿里云oss对象存储sdk</description>
+    <packaging>jar</packaging>
+    <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
+        <!-- spring-boot 组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <!-- 阿里云oss -->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
             <version>${aliyun-sdk-oss.version}</version>
+        </dependency>
+        <!-- base包 -->
+        <dependency>
+            <groupId>com.leeyom</groupId>
+            <artifactId>sdk-base</artifactId>
+            <version>${sdk-base.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>sdk-base</module>
         <module>tencent-lbs-sdk</module>
         <module>tencent-cos-sdk</module>
         <module>aliyun-oss-sdk</module>
@@ -22,18 +23,19 @@
     </parent>
 
     <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aliyun-sdk-oss.version>3.8.0</aliyun-sdk-oss.version>
         <aliyun-msg-sdk.version>4.5.1</aliyun-msg-sdk.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <hutool-all>5.3.5</hutool-all>
+        <sdk-base.version>0.0.1-SNAPSHOT</sdk-base.version>
+        <aliyun-oss-sdk.version>0.0.1-SNAPSHOT</aliyun-oss-sdk.version>
+        <aliyun-sms-sdk.version>0.0.1-SNAPSHOT</aliyun-sms-sdk.version>
     </properties>
 
     <dependencies>
-        <!-- spring-boot 组件 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
         <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -46,25 +48,5 @@
             <artifactId>hutool-all</artifactId>
             <version>${hutool-all}</version>
         </dependency>
-        <!-- validator -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${validation-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator.version}</version>
-        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>
