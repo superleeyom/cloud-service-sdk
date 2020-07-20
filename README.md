@@ -24,25 +24,25 @@
     
 ## 模块介绍
 
-- tencent-lbs-sdk：腾讯地图 webServiceAPI 接口封装
-- tencent-cos-sdk：腾讯云对象存储封装
-- aliyun-oss-sdk：阿里云对象存储封装
-- aliyun-sms-sdk：阿里云短信封装
-- sdk-base：基础依赖包
-- test-demo：示例 demo
+- `tencent-lbs-sdk`：腾讯地图 webServiceAPI 接口封装
+- `tencent-cos-sdk`：腾讯云对象存储封装
+- `aliyun-oss-sdk`：阿里云对象存储封装
+- `aliyun-sms-sdk`：阿里云短信封装
+- `sdk-base`：基础依赖包
+- `test-demo`：示例 demo
 
 ## 重要文件
 
 - 配置类：这些配置类里面的属性，在对应的云服务商控制台都能找到
-    - aliyun-oss.properties
-    - aliyun-sms.properties
-    - tencent-cos.properties
-    - tencent-lbs.properties
+    - `aliyun-oss.properties`
+    - `aliyun-sms.properties`
+    - `tencent-cos.properties`
+    - `tencent-lbs.properties`
 - 工具类：
-    - AliOssUtil：阿里云对象存储相关
-    - AliSmsUtil：阿里短信服务相关
-    - TencentCosUtil：腾讯对象存储相关
-    - TencentLbsUtil：腾讯地图 webServiceAPI 接口相关
+    - `AliOssUtil`：阿里云对象存储相关
+    - `AliSmsUtil`：阿里短信服务相关
+    - `TencentCosUtil`：腾讯对象存储相关
+    - `TencentLbsUtil`：腾讯地图 webServiceAPI 接口相关
 
 ## 使用环境
 
@@ -62,7 +62,7 @@
 </dependency>
 ```
 
-然后直接使用 TencentLbsUtil 工具类，即可调用对应的接口，不需关心参数签名等细节：
+然后直接使用 `TencentLbsUtil` 工具类，即可调用对应的接口，不需关心参数签名等细节：
 
 ```java
 /**
