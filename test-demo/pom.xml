@@ -46,6 +46,12 @@
             <artifactId>aliyun-sms-sdk</artifactId>
             <version>${aliyun-sms-sdk.version}</version>
         </dependency>
+        <!-- 腾讯云对象存储sdk -->
+        <dependency>
+            <groupId>com.leeyom</groupId>
+            <artifactId>tencent-cos-sdk</artifactId>
+            <version>${tencetn-cos-sdk.version}</version>
+        </dependency>
 
     </dependencies>
 

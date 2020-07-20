@@ -28,11 +28,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <aliyun-sdk-oss.version>3.8.0</aliyun-sdk-oss.version>
         <aliyun-msg-sdk.version>4.5.1</aliyun-msg-sdk.version>
+        <tencent-cos.version>5.6.25</tencent-cos.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <hutool-all>5.3.5</hutool-all>
         <sdk-base.version>0.0.1-SNAPSHOT</sdk-base.version>
         <aliyun-oss-sdk.version>0.0.1-SNAPSHOT</aliyun-oss-sdk.version>
         <aliyun-sms-sdk.version>0.0.1-SNAPSHOT</aliyun-sms-sdk.version>
+        <tencetn-cos-sdk.version>0.0.1-SNAPSHOT</tencetn-cos-sdk.version>
     </properties>
 
     <dependencies>

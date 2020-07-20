@@ -13,4 +13,17 @@
     <description>腾讯云cos对象存储sdk封装</description>
     <version>0.0.1-SNAPSHOT</version>
 
+    <dependencies>
+        <!-- spring-boot 组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- 腾讯云对象存储 -->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>${tencent-cos.version}</version>
+        </dependency>
+    </dependencies>
 </project>
