@@ -29,15 +29,18 @@ import java.util.Date;
 @Slf4j
 public class AliOssUtil {
 
-    @Autowired
-    private AliOssProperties aliOssProperties;
+    private static AliOssProperties aliOssProperties;
+    private static OSS ossClient;
 
-    private OSS ossClient;
+    @Autowired
+    public void setAliOssProperties(AliOssProperties aliOssProperties) {
+        AliOssUtil.aliOssProperties = aliOssProperties;
+    }
 
     /**
      * 允许上传文件的大小
      */
-    private long MAX_SIZE = 30 * 1024 * 1024;
+    private static long MAX_SIZE = 30 * 1024 * 1024;
 
     @PostConstruct
     private void init() {
@@ -49,36 +52,24 @@ public class AliOssUtil {
         }
     }
 
-    public void uploadImg2Oss(String url) {
+    public static void uploadImg2Oss(String url) {
         File fileOnServer = new File(url);
         FileInputStream fin;
         try {
             fin = new FileInputStream(fileOnServer);
             String[] split = url.split("/");
-            this.uploadFile2OSS(fin, split[split.length - 1]);
+            uploadFile2OSS(fin, split[split.length - 1]);
         } catch (FileNotFoundException e) {
             throw new BizException(Status.ERROR, "图片上传失败");
         }
     }
 
-    public String uploadImg2Oss(MultipartFile file) {
-        if (file.getSize() > MAX_SIZE) {
-            throw new BizException(Status.ERROR, "图片上传大小不能超过30兆");
-        }
-        String originalFilename = file.getOriginalFilename();
-        if (StrUtil.isBlank(originalFilename)) {
-            throw new BizException(Status.ERROR, "图片名称不能为空");
-        }
-
-        String suffix = StrUtil.subSuf(originalFilename, StrUtil.lastIndexOfIgnoreCase(originalFilename, ".")).toLowerCase();
-        if (StrUtil.isBlank(suffix)) {
-            throw new BizException(Status.ERROR, "文件后缀为空");
-        }
+    public static String uploadImg2Oss(MultipartFile file) {
+        String suffix = validateParam(file);
         String name = IdUtil.simpleUUID() + suffix;
         try {
             InputStream inputStream = file.getInputStream();
-            this.uploadFile2OSS(inputStream, name);
-
+            uploadFile2OSS(inputStream, name);
             // 返回完整的访问url
             String imgUrl = getImgUrl(name);
             if (StrUtil.isBlank(imgUrl)) {
@@ -94,9 +85,28 @@ public class AliOssUtil {
         }
     }
 
-    public String uploadImg2Oss(InputStream inputStream, String fileName) {
+    private static String validateParam(MultipartFile file) {
+        if (file == null) {
+            throw new BizException(Status.ERROR, "文件不能为空");
+        }
+        if (file.getSize() > MAX_SIZE) {
+            throw new BizException(Status.ERROR, "图片上传大小不能超过30兆");
+        }
+        String originalFilename = file.getOriginalFilename();
+        if (StrUtil.isBlank(originalFilename)) {
+            throw new BizException(Status.ERROR, "图片名称不能为空");
+        }
+
+        String suffix = StrUtil.subSuf(originalFilename, StrUtil.lastIndexOfIgnoreCase(originalFilename, ".")).toLowerCase();
+        if (StrUtil.isBlank(suffix)) {
+            throw new BizException(Status.ERROR, "文件后缀为空");
+        }
+        return suffix;
+    }
+
+    public static String uploadImg2Oss(InputStream inputStream, String fileName) {
         try {
-            this.uploadFile2OSS(inputStream, fileName);
+            uploadFile2OSS(inputStream, fileName);
             String imgUrl = getImgUrl(fileName);
             String[] split = imgUrl.split("\\?");
             if (ArrayUtil.isEmpty(split)) {
@@ -114,11 +124,11 @@ public class AliOssUtil {
      * @param fileUrl
      * @return
      */
-    private String getImgUrl(String fileUrl) {
+    private static String getImgUrl(String fileUrl) {
         System.out.println(fileUrl);
         if (StrUtil.isNotBlank(fileUrl)) {
             String[] split = fileUrl.split("/");
-            return this.getUrl(aliOssProperties.getFileDir() + split[split.length - 1]);
+            return getUrl(aliOssProperties.getFileDir() + split[split.length - 1]);
         }
         return null;
     }
@@ -130,7 +140,7 @@ public class AliOssUtil {
      * @param fileName 文件名称 包括后缀名
      * @return 出错返回"" ,唯一MD5数字签名
      */
-    private String uploadFile2OSS(InputStream instream, String fileName) {
+    private static String uploadFile2OSS(InputStream instream, String fileName) {
         String ret = "";
         try {
             // 创建上传Object的Metadata
@@ -159,7 +169,7 @@ public class AliOssUtil {
     }
 
     /**
-     * Description: 判断OSS服务文件上传时文件的contentType
+     * 判断OSS服务文件上传时文件的contentType
      *
      * @param filenameExtension 文件后缀
      * @return String
@@ -202,7 +212,7 @@ public class AliOssUtil {
      * @param key
      * @return
      */
-    private String getUrl(String key) {
+    private static String getUrl(String key) {
         // 设置URL过期时间为10年 3600l* 1000*24*365*10
         Date expiration = new Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10);
         // 生成URL

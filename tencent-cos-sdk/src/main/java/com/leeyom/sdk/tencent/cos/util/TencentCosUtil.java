@@ -4,6 +4,7 @@ import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.leeyom.sdk.base.BizException;
 import com.leeyom.sdk.tencent.cos.config.TencentCosProperties;
 import com.leeyom.sdk.tencent.cos.dto.TencentCosPreSignPostDTO;
 import com.leeyom.sdk.tencent.cos.dto.TencentCosPreSignPutDTO;
@@ -33,12 +34,16 @@ import java.util.Map;
 @Component
 public class TencentCosUtil {
 
+    private static TencentCosProperties tencentCosProperties;
+    private static COSClient cosclient;
+
     @Autowired
-    private TencentCosProperties tencentCosProperties;
-    private COSClient cosclient;
+    public void setTencentCosProperties(TencentCosProperties tencentCosProperties) {
+        TencentCosUtil.tencentCosProperties = tencentCosProperties;
+    }
 
     @PostConstruct
-    public void init() {
+    private void init() {
         // 1 初始化用户身份信息
         COSCredentials cred = new BasicCOSCredentials(tencentCosProperties.getSecretId(), tencentCosProperties.getSecretKey());
         // 2 设置bucket的区域
@@ -53,7 +58,8 @@ public class TencentCosUtil {
      * @param fileName 文件名，比如：header.jpg
      * @return 前端上传文件的预签名url和实际文件访问地址
      */
-    public TencentCosPreSignPutDTO getCosUploadTokenForPut(String fileName) {
+    public static TencentCosPreSignPutDTO getCosUploadTokenForPut(String fileName) {
+        validateParam(fileName);
         Date expiredTime = new Date(System.currentTimeMillis() + tencentCosProperties.getExpiredTime());
         // 为防止文件重复，重写文件名称
         String key = tencentCosProperties.getDir() + IdUtil.simpleUUID() + fileName.substring(fileName.lastIndexOf("."));
@@ -72,13 +78,24 @@ public class TencentCosUtil {
         return TencentCosPreSignPutDTO.builder().preSignUrl(sign.toString()).fileUrl(fileUrl).build();
     }
 
+    private static void validateParam(String fileName) {
+        if (StrUtil.isBlank(fileName)) {
+            throw new BizException("文件名不能为空");
+        }
+        String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
+        if (StrUtil.isBlank(fileSuffix)) {
+            throw new BizException("请指定文件名后缀");
+        }
+    }
+
     /**
      * POST方式获取预签名
      *
      * @param fileName 文件名，比如：header.jpg
      * @return 前端上传文件的预签名url和实际文件访问地址
      */
-    public TencentCosPreSignPostDTO getCosUploadTokenForPost(String fileName) {
+    public static TencentCosPreSignPostDTO getCosUploadTokenForPost(String fileName) {
+        validateParam(fileName);
         String bucketName = tencentCosProperties.getBucketName();
         String key = tencentCosProperties.getDir() + IdUtil.simpleUUID() + fileName.substring(fileName.lastIndexOf("."));
         long startTimestamp = System.currentTimeMillis() / 1000;

@@ -35,6 +35,7 @@
         <aliyun-oss-sdk.version>0.0.1-SNAPSHOT</aliyun-oss-sdk.version>
         <aliyun-sms-sdk.version>0.0.1-SNAPSHOT</aliyun-sms-sdk.version>
         <tencetn-cos-sdk.version>0.0.1-SNAPSHOT</tencetn-cos-sdk.version>
+        <tencetn-lbs-sdk.version>0.0.1-SNAPSHOT</tencetn-lbs-sdk.version>
     </properties>
 
     <dependencies>

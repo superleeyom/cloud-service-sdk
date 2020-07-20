@@ -10,7 +10,20 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tencent-lbs-sdk</artifactId>
     <packaging>jar</packaging>
-    <description>腾讯地图sdk封装</description>
+    <description>腾讯地图 WebServiceAPI sdk 封装</description>
     <version>0.0.1-SNAPSHOT</version>
 
+    <dependencies>
+        <!-- spring-boot 组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- base包 -->
+        <dependency>
+            <groupId>com.leeyom</groupId>
+            <artifactId>sdk-base</artifactId>
+            <version>${sdk-base.version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -1,5 +1,7 @@
 package com.leeyom.sdk.aliyun.sms.util;
 
+import cn.hutool.core.lang.Validator;
+import cn.hutool.core.util.StrUtil;
 import com.aliyuncs.CommonRequest;
 import com.aliyuncs.CommonResponse;
 import com.aliyuncs.DefaultAcsClient;
@@ -8,6 +10,7 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.leeyom.sdk.aliyun.sms.config.AliSmsProperties;
+import com.leeyom.sdk.base.BizException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,12 +26,16 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public class AliSmsUtil {
 
+    private static AliSmsProperties aliSmsProperties;
+    private static IAcsClient client;
+
     @Autowired
-    private AliSmsProperties aliSmsProperties;
-    private IAcsClient client;
+    public void setAliSmsProperties(AliSmsProperties aliSmsProperties) {
+        AliSmsUtil.aliSmsProperties = aliSmsProperties;
+    }
 
     @PostConstruct
-    public void init() {
+    private void init() {
         try {
             DefaultProfile profile = DefaultProfile.getProfile(aliSmsProperties.getRegionId(),
                     aliSmsProperties.getAccessKeyId(), aliSmsProperties.getAccessKeySecret());
@@ -38,7 +45,15 @@ public class AliSmsUtil {
         }
     }
 
-    public boolean sendSms(String phoneNum, String code) {
+    /**
+     * 发送验证码
+     *
+     * @param phoneNum 手机号
+     * @param code     验证码
+     * @return 发送结果
+     */
+    public static boolean sendSms(String phoneNum, String code) {
+        validateParam(phoneNum, code);
         CommonRequest request = new CommonRequest();
         request.setSysMethod(MethodType.POST);
         request.setSysDomain("dysmsapi.aliyuncs.com");
@@ -57,6 +72,16 @@ public class AliSmsUtil {
             log.error("短信验证码发送异常：{}", e.getMessage());
         }
         return false;
+    }
+
+    private static void validateParam(String phoneNum, String code) {
+        if (!Validator.isMobile(phoneNum)) {
+            throw new BizException("手机格式不正确");
+        }
+
+        if (StrUtil.isBlank(code)) {
+            throw new BizException("验证码不能为空");
+        }
     }
 
 }

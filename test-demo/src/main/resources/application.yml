@@ -5,3 +5,8 @@ server:
 spring:
   application:
     name: test-demo
+
+javamelody:
+  enabled: true
+  init-parameters:
+    log: true

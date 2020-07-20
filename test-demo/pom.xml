@@ -12,6 +12,9 @@
     <name>test-demo</name>
     <description>示例项目</description>
 
+    <properties>
+        <javamelody.version>1.83.0</javamelody.version>
+    </properties>
     <dependencies>
         <!-- boot组件 -->
         <dependency>
@@ -34,6 +37,12 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
         </dependency>
+        <!--monitor-->
+        <dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-spring-boot-starter</artifactId>
+            <version>${javamelody.version}</version>
+        </dependency>
         <!-- 阿里云 oss sdk -->
         <dependency>
             <groupId>com.leeyom</groupId>
@@ -51,6 +60,12 @@
             <groupId>com.leeyom</groupId>
             <artifactId>tencent-cos-sdk</artifactId>
             <version>${tencetn-cos-sdk.version}</version>
+        </dependency>
+        <!-- 腾讯地图webServiceAPI sdk -->
+        <dependency>
+            <groupId>com.leeyom</groupId>
+            <artifactId>tencent-lbs-sdk</artifactId>
+            <version>${tencetn-lbs-sdk.version}</version>
         </dependency>
 
     </dependencies>
