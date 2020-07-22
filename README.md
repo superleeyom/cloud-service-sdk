@@ -46,8 +46,8 @@
 
 ## 使用环境
 
-- java 1.8
-- spring boot 2.x
+- JDK 1.8+
+- Spring Boot 2.x
     
 ## 如何使用
 
