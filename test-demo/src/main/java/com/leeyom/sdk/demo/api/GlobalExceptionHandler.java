@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
             return ApiResponse.ofException((BaseException) e);
         }
 
-        log.error("【全局异常拦截】: 异常信息 {} ", e.getMessage());
+        log.error("【全局异常拦截】异常堆栈信息： ", e);
         return ApiResponse.ofStatus(Status.ERROR, "系统繁忙，请稍后重试");
     }
 }
