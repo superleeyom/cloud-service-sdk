@@ -16,12 +16,12 @@ public class TencentCosPreSignPostDTO {
 
 
     /**
-     * 表单的body字段值
+     * 前端直传表单的body字段值
      */
     Map<String, String> formFields;
 
     /**
-     * 腾讯云cos预签名地址
+     * 前端直传的请求的host
      */
     private String preSignUrl;
 

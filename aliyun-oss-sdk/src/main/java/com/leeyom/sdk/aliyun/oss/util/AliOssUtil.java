@@ -7,8 +7,13 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.ObjectMetadata;
+import com.aliyun.oss.model.PolicyConditions;
 import com.leeyom.sdk.aliyun.oss.config.AliOssProperties;
+import com.leeyom.sdk.aliyun.oss.dto.AliyunOssPolicy;
+import com.leeyom.sdk.aliyun.oss.dto.AliyunOssPreSignedUrlDTO;
 import com.leeyom.sdk.base.BizException;
 import com.leeyom.sdk.base.Status;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +25,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -55,9 +61,9 @@ public class AliOssUtil {
      * @param file 文件域
      * @return 上传后的url
      */
-    public static String uploadImg2Oss(MultipartFile file) {
+    public static String upload2Oss(MultipartFile file) {
         String suffix = validateParam(file);
-        String name = IdUtil.simpleUUID() + suffix;
+        String fileName = IdUtil.simpleUUID() + suffix;
         InputStream inputStream;
         try {
             inputStream = file.getInputStream();
@@ -65,19 +71,54 @@ public class AliOssUtil {
             throw new BizException("文件流读取出错");
         }
         // 上传文件
-        uploadFile2OSS(inputStream, name);
+        uploadFile2OSS(inputStream, fileName);
         // 返回完整的访问url
-        String imgUrl = getImgUrl(name);
-        if (StrUtil.isBlank(imgUrl)) {
-            throw new BizException(Status.ERROR, "文件上传失败，文件url为空");
-        }
+        return getFileUrl(fileName);
+    }
 
-        // 去掉url后面的敏感数据，例如 AccessKeyId 等
-        String[] split = imgUrl.split("\\?");
-        if (ArrayUtil.isEmpty(split)) {
-            throw new BizException(Status.ERROR, "文件上传失败，文件url为空");
+    /**
+     * 获取前端直传策略数据
+     *
+     * @param fileName 文件名
+     * @return 预签名url和文件访问url
+     */
+    public static AliyunOssPreSignedUrlDTO getOssPolicy(String fileName) {
+
+        String suffix = validateFileName(fileName);
+        fileName = IdUtil.simpleUUID() + suffix;
+
+        // PostObject请求最大可支持的文件大小为5GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024
+        PolicyConditions policyConds = new PolicyConditions();
+        policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
+        policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, aliOssProperties.getFileDir());
+
+        // 设置预签名的上传url的过期时间为1小时
+        Date expiration = new Date(new Date().getTime() + 3600 * 1000);
+        String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+        byte[] binaryData = postPolicy.getBytes(StandardCharsets.UTF_8);
+        String encodedPolicy = BinaryUtil.toBase64String(binaryData);
+        String postSignature = ossClient.calculatePostSignature(postPolicy);
+
+        // 构建直传策略
+        AliyunOssPolicy policy = new AliyunOssPolicy();
+        policy.setAccessKeyId(aliOssProperties.getAccessKeyId());
+        policy.setPolicy(encodedPolicy);
+        policy.setSignature(postSignature);
+        policy.setHost("https://" + aliOssProperties.getBucketName() + "." + aliOssProperties.getEndpoint());
+        policy.setKey(aliOssProperties.getFileDir() + fileName);
+
+        return AliyunOssPreSignedUrlDTO.builder().fileUrl(getFileUrl(fileName)).aliyunOssPolicy(policy).build();
+    }
+
+    private static String validateFileName(String fileName) {
+        if (StrUtil.isBlank(fileName)) {
+            throw new BizException(Status.ERROR, "文件名称不能为空");
         }
-        return split[0];
+        String suffix = StrUtil.subSuf(fileName, StrUtil.lastIndexOfIgnoreCase(fileName, ".")).toLowerCase();
+        if (StrUtil.isBlank(suffix)) {
+            throw new BizException(Status.ERROR, "文件后缀为空");
+        }
+        return suffix;
     }
 
     /**
@@ -92,29 +133,30 @@ public class AliOssUtil {
             throw new BizException(Status.ERROR, "文件不能为空");
         }
         if (file.getSize() > MAX_SIZE) {
-            throw new BizException(Status.ERROR, "图片上传大小不能超过30兆");
+            throw new BizException(Status.ERROR, "文件上传大小不能超过30兆");
         }
         String originalFilename = file.getOriginalFilename();
-        if (StrUtil.isBlank(originalFilename)) {
-            throw new BizException(Status.ERROR, "图片名称不能为空");
-        }
-
-        String suffix = StrUtil.subSuf(originalFilename, StrUtil.lastIndexOfIgnoreCase(originalFilename, ".")).toLowerCase();
-        if (StrUtil.isBlank(suffix)) {
-            throw new BizException(Status.ERROR, "文件后缀为空");
-        }
-        return suffix;
+        return validateFileName(originalFilename);
     }
 
     /**
-     * 获得图片路径
+     * 获得上传文件路径
      *
      * @param fileName 文件名，比如：123.jpg
-     * @return 图片的访问路径
+     * @return 文件的访问路径
      */
-    private static String getImgUrl(String fileName) {
+    private static String getFileUrl(String fileName) {
         if (StrUtil.isNotBlank(fileName)) {
-            return getUrl(aliOssProperties.getFileDir() + fileName);
+            String fileUrl = getUrl(aliOssProperties.getFileDir() + fileName);
+            if (StrUtil.isBlank(fileUrl)) {
+                throw new BizException(Status.ERROR, "文件上传失败，文件url为空");
+            }
+            // 去掉url后面的敏感数据，例如 AccessKeyId 等
+            String[] split = fileUrl.split("\\?");
+            if (ArrayUtil.isEmpty(split)) {
+                throw new BizException(Status.ERROR, "文件上传失败，文件url为空");
+            }
+            return split[0];
         }
         return StrUtil.EMPTY;
     }
@@ -182,7 +224,7 @@ public class AliOssUtil {
     }
 
     /**
-     * 使用签名URL临时授权
+     * 使用签名URL获取文件
      *
      * @param key objectName
      * @return 文件访问url

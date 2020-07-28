@@ -13,7 +13,7 @@ import lombok.Data;
 public class TencentCosPreSignPutDTO {
 
     /**
-     * 腾讯云cos预签名地址
+     * 前端直传的请求的host
      */
     private String preSignUrl;
 
