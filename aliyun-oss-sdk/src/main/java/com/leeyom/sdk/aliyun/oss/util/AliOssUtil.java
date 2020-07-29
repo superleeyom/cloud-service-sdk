@@ -128,12 +128,11 @@ public class AliOssUtil {
      * @return 文件后缀
      */
     private static String validateParam(MultipartFile file) {
-        long MAX_SIZE = 30 * 1024 * 1024;
         if (file == null) {
             throw new BizException(Status.ERROR, "文件不能为空");
         }
-        if (file.getSize() > MAX_SIZE) {
-            throw new BizException(Status.ERROR, "文件上传大小不能超过30兆");
+        if (file.getSize() / (1024 * 1024) > aliOssProperties.getMaxFileSize()) {
+            throw new BizException(Status.ERROR, "文件上传大小不能超过" + aliOssProperties.getMaxFileSize() + "MB");
         }
         String originalFilename = file.getOriginalFilename();
         return validateFileName(originalFilename);
@@ -192,32 +191,32 @@ public class AliOssUtil {
      * @return ContentType
      */
     private static String getContentType(String fileSuffix) {
-        if (fileSuffix.equalsIgnoreCase("bmp")) {
+        if (fileSuffix.equalsIgnoreCase(".bmp")) {
             return "image/bmp";
         }
-        if (fileSuffix.equalsIgnoreCase("gif")) {
+        if (fileSuffix.equalsIgnoreCase(".gif")) {
             return "image/gif";
         }
-        if (fileSuffix.equalsIgnoreCase("jpeg") || fileSuffix.equalsIgnoreCase("jpg")
-                || fileSuffix.equalsIgnoreCase("png")) {
+        if (fileSuffix.equalsIgnoreCase(".jpeg") || fileSuffix.equalsIgnoreCase(".jpg")
+                || fileSuffix.equalsIgnoreCase(".png")) {
             return "image/jpeg";
         }
-        if (fileSuffix.equalsIgnoreCase("html")) {
+        if (fileSuffix.equalsIgnoreCase(".html")) {
             return "text/html";
         }
-        if (fileSuffix.equalsIgnoreCase("txt")) {
+        if (fileSuffix.equalsIgnoreCase(".txt")) {
             return "text/plain";
         }
-        if (fileSuffix.equalsIgnoreCase("vsd")) {
+        if (fileSuffix.equalsIgnoreCase(".vsd")) {
             return "application/vnd.visio";
         }
-        if (fileSuffix.equalsIgnoreCase("pptx") || fileSuffix.equalsIgnoreCase("ppt")) {
+        if (fileSuffix.equalsIgnoreCase(".pptx") || fileSuffix.equalsIgnoreCase(".ppt")) {
             return "application/vnd.ms-powerpoint";
         }
-        if (fileSuffix.equalsIgnoreCase("docx") || fileSuffix.equalsIgnoreCase("doc")) {
+        if (fileSuffix.equalsIgnoreCase(".docx") || fileSuffix.equalsIgnoreCase(".doc")) {
             return "application/msword";
         }
-        if (fileSuffix.equalsIgnoreCase("xml")) {
+        if (fileSuffix.equalsIgnoreCase(".xml")) {
             return "text/xml";
         }
         return "image/jpeg";

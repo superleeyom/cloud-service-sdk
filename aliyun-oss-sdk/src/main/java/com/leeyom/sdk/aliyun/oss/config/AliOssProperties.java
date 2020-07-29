@@ -41,4 +41,9 @@ public class AliOssProperties {
      */
     private String fileDir;
 
+    /**
+     * 上传文件大小限制
+     */
+    private long maxFileSize;
+
 }
