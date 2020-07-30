@@ -34,7 +34,7 @@
 - `sdk-base`：基础依赖包
 - `test-demo`：示例 demo
 
-## 重要文件
+## 核心类与配置
 
 - 配置类：这些配置类里面的属性，在对应的云服务商控制台都能找到
     - `aliyun-oss.properties`
