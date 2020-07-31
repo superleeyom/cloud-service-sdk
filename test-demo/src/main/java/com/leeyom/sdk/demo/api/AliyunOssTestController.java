@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 阿里云对象存储示例
+ *
+ * @author leeyom
+ */
 @RestController
 @RequestMapping("aliyunOss")
 public class AliyunOssTestController {

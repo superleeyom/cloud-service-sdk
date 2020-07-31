@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 腾讯云对象存储示例
+ *
+ * @author leeyom
+ */
 @RestController
 @RequestMapping("tencentCos")
 public class TencentCosTestController {

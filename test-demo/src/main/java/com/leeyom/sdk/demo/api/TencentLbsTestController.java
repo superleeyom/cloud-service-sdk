@@ -3,11 +3,17 @@ package com.leeyom.sdk.demo.api;
 import com.leeyom.sdk.base.ApiResponse;
 import com.leeyom.sdk.tencent.lbs.dto.IpLocationDTO;
 import com.leeyom.sdk.tencent.lbs.dto.LocationDTO;
+import com.leeyom.sdk.tencent.lbs.dto.TranslateRequestDTO;
 import com.leeyom.sdk.tencent.lbs.util.TencentLbsUtil;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+/**
+ * 腾讯地图 webservice api 接口 demo
+ *
+ * @author leeyom
+ */
 @RestController
 @RequestMapping("tencentLbs")
 public class TencentLbsTestController {
@@ -59,5 +65,18 @@ public class TencentLbsTestController {
     public ApiResponse<IpLocationDTO> ipLocation(String ip) {
         return ApiResponse.ofSuccess(TencentLbsUtil.ipLocation(ip));
     }
+
+
+    /**
+     * 实现从其它地图供应商坐标系或标准GPS坐标系，批量转换到腾讯地图坐标系
+     *
+     * @param translateRequestDTO 请求参数
+     * @return 坐标转换结果，转换后的坐标顺序与输入顺序一致
+     */
+    @PostMapping("translate")
+    public ApiResponse<List<LocationDTO>> translate(@RequestBody TranslateRequestDTO translateRequestDTO) {
+        return ApiResponse.ofSuccess(TencentLbsUtil.translate(translateRequestDTO));
+    }
+
 }
 

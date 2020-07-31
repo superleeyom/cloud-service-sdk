@@ -16,6 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 阿里云短信示例
+ *
+ * @author leeyom
+ */
 @RestController
 @RequestMapping("aliyunSms")
 public class AliyunSmsTestController {

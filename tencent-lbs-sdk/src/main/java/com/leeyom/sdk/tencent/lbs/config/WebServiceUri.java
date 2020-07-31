@@ -16,4 +16,9 @@ public interface WebServiceUri {
      * IP定位
      */
     String IP_API = "/ws/location/v1/ip";
+
+    /**
+     * 坐标转换
+     */
+    String TRANSLATE = "/ws/coord/v1/translate";
 }

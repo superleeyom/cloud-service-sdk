@@ -15,15 +15,20 @@ import com.leeyom.sdk.tencent.lbs.exception.LbsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 腾讯地图api接口
+ *
+ * @author leeyom
+ */
 @Component
 public class TencentLbsUtil {
 
 
     private static WebServiceApiProperties webServiceApiProperties;
+    private static final int SUCCESS = 0;
 
     @Autowired
     public void setWebServiceApiProperties(WebServiceApiProperties webServiceApiProperties) {
@@ -40,12 +45,12 @@ public class TencentLbsUtil {
         if (StrUtil.isBlank(location)) {
             throw new BizException("地理坐标不能为空");
         }
-        Map<String, Object> param = new HashMap<>(3);
+        Map<String, Object> param = CollUtil.newHashMap(3);
         param.put(WebServiceApiConst.LOCATION, location);
-        TencentMapResultDTO resultDTO = requestToTencent(param, WebServiceUri.GEOCODER_API);
-        TencentMapAddressDTO tencentMapAddressDTO = BeanUtil.toBean(resultDTO.getResult(), TencentMapAddressDTO.class);
+        TencentLbsResponseDTO responseDTO = requestToTencentLbs(param, WebServiceUri.GEOCODER_API);
+        TencentMapAddressDTO tencentMapAddressDTO = BeanUtil.toBean(responseDTO.getResult(), TencentMapAddressDTO.class);
         if (tencentMapAddressDTO == null) {
-            throw new LbsException(resultDTO.getMessage());
+            throw new LbsException(responseDTO.getMessage());
         }
         return tencentMapAddressDTO.getAddress();
     }
@@ -60,12 +65,12 @@ public class TencentLbsUtil {
         if (StrUtil.isBlank(address)) {
             throw new BizException("详细地址不能为空");
         }
-        Map<String, Object> param = new HashMap<>(3);
+        Map<String, Object> param = CollUtil.newHashMap(3);
         param.put(WebServiceApiConst.ADDRESS, address);
-        TencentMapResultDTO resultDTO = requestToTencent(param, WebServiceUri.GEOCODER_API);
-        TencentMapLocationDTO tencentMapLocationDTO = BeanUtil.toBean(resultDTO.getResult(), TencentMapLocationDTO.class);
+        TencentLbsResponseDTO responseDTO = requestToTencentLbs(param, WebServiceUri.GEOCODER_API);
+        TencentMapLocationDTO tencentMapLocationDTO = BeanUtil.toBean(responseDTO.getResult(), TencentMapLocationDTO.class);
         if (tencentMapLocationDTO == null) {
-            throw new LbsException(resultDTO.getMessage());
+            throw new LbsException(responseDTO.getMessage());
         }
         return tencentMapLocationDTO.getLocation();
     }
@@ -81,15 +86,15 @@ public class TencentLbsUtil {
      */
     public static double distance(String mode, String from, String to) {
         validateParam(mode, from, to);
-        Map<String, Object> param = new HashMap<>(5);
+        Map<String, Object> param = CollUtil.newHashMap(5);
         param.put(WebServiceApiConst.MODE, mode);
         param.put(WebServiceApiConst.FROM, from);
         param.put(WebServiceApiConst.TO, to);
-        TencentMapResultDTO resultDTO = requestToTencent(param, WebServiceUri.DISTANCE_API);
-        if (resultDTO.getStatus() != 0) {
-            throw new LbsException(resultDTO.getMessage());
+        TencentLbsResponseDTO responseDTO = requestToTencentLbs(param, WebServiceUri.DISTANCE_API);
+        if (responseDTO.getStatus() != SUCCESS) {
+            throw new LbsException(responseDTO.getMessage());
         }
-        TencentMapDistanceDTO tencentMapDistanceDTO = BeanUtil.toBean(resultDTO.getResult(), TencentMapDistanceDTO.class);
+        TencentMapDistanceDTO tencentMapDistanceDTO = BeanUtil.toBean(responseDTO.getResult(), TencentMapDistanceDTO.class);
         List<DistanceDTO> elements = tencentMapDistanceDTO.getElements();
         if (CollUtil.isNotEmpty(elements)) {
             DistanceDTO distanceDTO = elements.get(0);
@@ -127,21 +132,44 @@ public class TencentLbsUtil {
         }
         Map<String, Object> param = CollUtil.newHashMap(3);
         param.put(WebServiceApiConst.IP, ip);
-        TencentMapResultDTO resultDTO = requestToTencent(param, WebServiceUri.IP_API);
-        if (resultDTO.getStatus() != 0) {
-            throw new LbsException(resultDTO.getMessage());
+        TencentLbsResponseDTO responseDTO = requestToTencentLbs(param, WebServiceUri.IP_API);
+        if (responseDTO.getStatus() != SUCCESS) {
+            throw new LbsException(responseDTO.getMessage());
         }
-        return BeanUtil.toBean(resultDTO.getResult(), IpLocationDTO.class);
+        return BeanUtil.toBean(responseDTO.getResult(), IpLocationDTO.class);
     }
 
-    private static TencentMapResultDTO requestToTencent(Map<String, Object> param, String uri) {
+    /**
+     * 实现从其它地图供应商坐标系或标准GPS坐标系，批量转换到腾讯地图坐标系
+     *
+     * @param translateRequestDTO 请求参数
+     * @return 坐标转换结果，转换后的坐标顺序与输入顺序一致
+     */
+    public static List<LocationDTO> translate(TranslateRequestDTO translateRequestDTO) {
+        if (StrUtil.isBlank(translateRequestDTO.getLocations())) {
+            throw new BizException("预转换的坐标不能为空");
+        }
+        Map<String, Object> param = BeanUtil.beanToMap(translateRequestDTO);
+        String responseJson = getResponseJson(param, WebServiceUri.TRANSLATE);
+        TencentLbsTranslateResponseDTO tencentLbsTranslateResponseDTO = JSONUtil.toBean(responseJson, TencentLbsTranslateResponseDTO.class);
+        if (tencentLbsTranslateResponseDTO.getStatus() != SUCCESS) {
+            throw new LbsException(tencentLbsTranslateResponseDTO.getMessage());
+        }
+        return CollUtil.emptyIfNull(tencentLbsTranslateResponseDTO.getLocations());
+    }
+
+    private static TencentLbsResponseDTO requestToTencentLbs(Map<String, Object> param, String uri) {
+        String responseJson = getResponseJson(param, uri);
+        return JSONUtil.toBean(responseJson, TencentLbsResponseDTO.class);
+    }
+
+    private static String getResponseJson(Map<String, Object> param, String uri) {
         // 签名
         String sign = WebServiceApiSignUtil.signGetRequest(uri, webServiceApiProperties.getAppSecret(),
                 webServiceApiProperties.getAppKey(), param);
         param.put(WebServiceApiConst.SIG, sign);
         String url = webServiceApiProperties.getDomain() + uri;
-        String postResult = HttpUtil.get(url, param);
-        return JSONUtil.toBean(postResult, TencentMapResultDTO.class);
+        return HttpUtil.get(url, param);
     }
 
 
