@@ -117,7 +117,8 @@ public class AliOssUtil {
 
     /**
      * 断点续传上传
-     * 上传过程中的进度信息会保存在 ${uploadFile}.ucp 文件中，如果某一分片上传失败，再次上传时会根据文件中记录的点继续上传。上传完成后，该文件会被删除。
+     * 上传过程中的进度信息会保存在 ${uploadFile}.ucp 文件中，如果某一分片上传失败，
+     * 再次上传时会根据文件中记录的点继续上传。上传完成后，该文件会被删除。
      *
      * @param uploadFile 文件路径，例如：/Users/leeyom/Downloads/myheader.jpg
      * @return 文件上传后的访问地址
@@ -132,7 +133,8 @@ public class AliOssUtil {
         try {
             File file = FileUtil.newFile(uploadFile);
             // 存储空间名称和上传到OSS的文件名称
-            UploadFileRequest uploadFileRequest = new UploadFileRequest(aliOssProperties.getBucketName(), aliOssProperties.getFileDir() + file.getName());
+            UploadFileRequest uploadFileRequest = new UploadFileRequest(aliOssProperties.getBucketName(),
+                    aliOssProperties.getFileDir() + file.getName());
             // 待上传的本地文件路径
             uploadFileRequest.setUploadFile(uploadFile);
             // 上传并发线程数，默认值为1
@@ -161,6 +163,71 @@ public class AliOssUtil {
             log.error("Error Message: {}", e.getMessage());
         }
         return "";
+    }
+
+    /**
+     * 断点续传下载
+     * downloadFile.ucp，记录本地分片下载结果的文件。开启断点续传功能，下载过程中的进度信息会保存在该文件中，
+     * 如果某一分片下载失败，再次下载时会根据文件中记录的点继续下载。下载完成后，该文件会被删除，该文件与DownloadFile同目录
+     *
+     * @param fileName 文件名称，比如：myheader.jpg
+     * @return 文件存储在本地的路径
+     */
+    public static String downloadFile(String fileName) {
+        if (StrUtil.isBlank(fileName)) {
+            throw new BizException("文件名称不能为空");
+        }
+
+        // 重命名文件，防止文件覆盖
+        String downloadFilePath = renameFile(fileName);
+
+        // 下载请求，10个任务并发下载，启动断点续传
+        DownloadFileRequest downloadFileRequest = new DownloadFileRequest(aliOssProperties.getBucketName(),
+                aliOssProperties.getFileDir() + fileName);
+        downloadFileRequest.setDownloadFile(downloadFilePath);
+        downloadFileRequest.setPartSize(1024 * 1024);
+        downloadFileRequest.setTaskNum(10);
+        downloadFileRequest.setEnableCheckpoint(true);
+        try {
+            // 下载文件
+            ossClient.downloadFile(downloadFileRequest);
+            return downloadFilePath;
+        } catch (Throwable throwable) {
+            log.error("文件下载失败：{}", throwable.getMessage());
+            return throwable.getMessage();
+        }
+    }
+
+    /**
+     * 如果出现相同名称的文件，文件名称将重命名为xxx(1).jpg，
+     * 比如文件名为：myheader.jpg，重命名后为：myheader(1).jpg
+     *
+     * @param fileName 文件名称
+     * @return 文件存储在本地的路径
+     */
+    private static String renameFile(String fileName) {
+        String downloadFileDir;
+        String downloadFilePath;
+        if (FileUtil.isWindows()) {
+            downloadFileDir = FileUtil.getUserHomePath() + "\\" + aliOssProperties.getBucketName() + "\\";
+        } else {
+            downloadFileDir = FileUtil.getUserHomePath() + "/" + aliOssProperties.getBucketName() + "/";
+        }
+        downloadFilePath = downloadFileDir + fileName;
+        File dir = new File(downloadFileDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File downloadFile = FileUtil.newFile(downloadFilePath);
+        if (FileUtil.exist(downloadFile)) {
+            String suffix = FileUtil.getSuffix(downloadFile);
+            String prefix = FileUtil.getPrefix(FileUtil.getName(downloadFilePath));
+            for (int i = 1; downloadFile.exists() && i < Integer.MAX_VALUE; i++) {
+                downloadFile = new File(downloadFileDir + prefix + '(' + i + ')' + "." + suffix);
+            }
+            downloadFilePath = downloadFile.getPath();
+        }
+        return downloadFilePath;
     }
 
     private static String validateFileName(String fileName) {

@@ -53,4 +53,16 @@ public class AliyunOssTestController {
         String url = AliOssUtil.breakpointUpload(uploadFile);
         return ApiResponse.ofSuccess(UploadImageUrlVO.builder().imageUrl(url).build());
     }
+
+    /**
+     * 断点续传下载
+     *
+     * @param fileName 文件名称，比如：myheader.jpg
+     * @return 文件存储在本地的路径
+     */
+    @GetMapping("downloadFile")
+    public ApiResponse<UploadImageUrlVO> downloadFile(String fileName) {
+        String url = AliOssUtil.downloadFile(fileName);
+        return ApiResponse.ofSuccess(UploadImageUrlVO.builder().imageUrl(url).build());
+    }
 }
