@@ -1,5 +1,6 @@
 package com.leeyom.sdk.aliyun.oss.util;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
@@ -7,10 +8,10 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.model.MatchMode;
-import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.PolicyConditions;
+import com.aliyun.oss.model.*;
+import com.aliyuncs.exceptions.ClientException;
 import com.leeyom.sdk.aliyun.oss.config.AliOssProperties;
 import com.leeyom.sdk.aliyun.oss.dto.AliyunOssPolicy;
 import com.leeyom.sdk.aliyun.oss.dto.AliyunOssPreSignedUrlDTO;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -62,6 +64,8 @@ public class AliOssUtil {
      * @return 上传后的url
      */
     public static String upload2Oss(MultipartFile file) {
+
+        // 防止文件重复，重命名文件名称
         String suffix = validateParam(file);
         String fileName = IdUtil.simpleUUID() + suffix;
         InputStream inputStream;
@@ -84,6 +88,7 @@ public class AliOssUtil {
      */
     public static AliyunOssPreSignedUrlDTO getOssPolicy(String fileName) {
 
+        // 防止文件重复，重命名文件名称
         String suffix = validateFileName(fileName);
         fileName = IdUtil.simpleUUID() + suffix;
 
@@ -108,6 +113,54 @@ public class AliOssUtil {
         policy.setKey(aliOssProperties.getFileDir() + fileName);
 
         return AliyunOssPreSignedUrlDTO.builder().fileUrl(getFileUrl(fileName)).aliyunOssPolicy(policy).build();
+    }
+
+    /**
+     * 断点续传上传
+     * 上传过程中的进度信息会保存在 ${uploadFile}.ucp 文件中，如果某一分片上传失败，再次上传时会根据文件中记录的点继续上传。上传完成后，该文件会被删除。
+     *
+     * @param uploadFile 文件路径，例如：/Users/leeyom/Downloads/myheader.jpg
+     * @return 文件上传后的访问地址
+     */
+    public static String breakpointUpload(String uploadFile) {
+        if (StrUtil.isBlank(uploadFile)) {
+            throw new BizException("文件路径为空");
+        }
+        if (!FileUtil.exist(uploadFile)) {
+            throw new BizException("当前文件不存在");
+        }
+        try {
+            File file = FileUtil.newFile(uploadFile);
+            // 存储空间名称和上传到OSS的文件名称
+            UploadFileRequest uploadFileRequest = new UploadFileRequest(aliOssProperties.getBucketName(), aliOssProperties.getFileDir() + file.getName());
+            // 待上传的本地文件路径
+            uploadFileRequest.setUploadFile(uploadFile);
+            // 上传并发线程数，默认值为1
+            uploadFileRequest.setTaskNum(5);
+            // 上传的分片大小，取值范围为100 KB~5 GB，默认值是100KB
+            uploadFileRequest.setPartSize(1024 * 1024);
+            // 是否开启断点续传功能，默认关闭
+            uploadFileRequest.setEnableCheckpoint(true);
+            UploadFileResult uploadResult = ossClient.uploadFile(uploadFileRequest);
+            uploadResult.getMultipartUploadResult();
+            // 返回完整的访问url
+            return getFileUrl(file.getName());
+        } catch (OSSException oe) {
+            log.error("Caught an OSSException, which means your request made it to OSS, "
+                    + "but was rejected with an error response for some reason.");
+            log.error("Error Message: {}", oe.getErrorMessage());
+            log.error("Error Code: {} ", oe.getErrorCode());
+            log.error("Request ID: {}", oe.getRequestId());
+            log.error("Host ID: {}", oe.getHostId());
+        } catch (ClientException ce) {
+            log.error("Caught an ClientException, which means the client encountered "
+                    + "a serious internal problem while trying to communicate with OSS, "
+                    + "such as not being able to access the network.");
+            log.error("Error Message: {}", ce.getMessage());
+        } catch (Throwable e) {
+            log.error("Error Message: {}", e.getMessage());
+        }
+        return "";
     }
 
     private static String validateFileName(String fileName) {

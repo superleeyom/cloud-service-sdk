@@ -42,4 +42,15 @@ public class AliyunOssTestController {
         return ApiResponse.ofSuccess(AliOssUtil.getOssPolicy(fileName));
     }
 
+    /**
+     * 断点续传上传
+     *
+     * @param uploadFile 文件路径，例如：/Users/leeyom/Downloads/myheader.jpg
+     * @return 文件上传后的访问地址
+     */
+    @GetMapping("breakpointUpload")
+    public ApiResponse<UploadImageUrlVO> breakpointUpload(String uploadFile) {
+        String url = AliOssUtil.breakpointUpload(uploadFile);
+        return ApiResponse.ofSuccess(UploadImageUrlVO.builder().imageUrl(url).build());
+    }
 }
