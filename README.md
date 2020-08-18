@@ -10,24 +10,24 @@
 ## 目前已支持功能
 
 - 阿里云短信服务：
-    - [x] 单条发送短信
-    - [x] 批量发送短信
+    - [x] [单条发送短信](https://help.aliyun.com/document_detail/55284.html?spm=a2c4g.11174283.6.667.8d482c42J8LHtu)
+    - [x] [批量发送短信](https://help.aliyun.com/document_detail/66041.html?spm=a2c4g.11186623.6.670.63d25777Qq5QSs)
 - 阿里云对象存储：
-    - [x] 流式上传文件（后台上传）
-    - [x] 获取前端直传策略数据（前端直传）
-    - [x] 断点续传上传
-    - [x] 断点续传下载
+    - [x] [流式上传文件（后台上传）](https://help.aliyun.com/document_detail/84781.html?spm=a2c4g.11174283.6.823.3f117da2HMePRX)
+    - [x] [获取前端直传策略数据（前端直传）](https://help.aliyun.com/document_detail/91868.html?spm=a2c4g.11186623.2.15.16076e28vYpsMF#concept-ahk-rfz-2fb)
+    - [x] [断点续传上传](https://help.aliyun.com/document_detail/84785.html?spm=a2c4g.11186623.6.826.14b41df2yWKbLx)
+    - [x] [断点续传下载](https://help.aliyun.com/document_detail/84827.html?spm=a2c4g.11186623.6.835.aa1d50a6nWqdGx)
 - 腾讯云对象存储：
-    - [x] 预签名URL方式上传-PUT方式（前端直传）
-    - [x] 预签名URL方式上传-POST方式（前端直传）
-    - [x] 流式上传（后台上传）
+    - [x] [预签名URL方式上传-PUT方式（前端直传）](https://cloud.tencent.com/document/product/436/35217)
+    - [x] [预签名URL方式上传-POST方式（前端直传）](https://cloud.tencent.com/document/product/436/14690)
+    - [x] [流式上传（后台上传）](https://cloud.tencent.com/document/product/436/35215#.E7.AE.80.E5.8D.95.E4.B8.8A.E4.BC.A0.E5.AF.B9.E8.B1.A1)
 - 腾讯地图：
-    - [x] 地理坐标转具体的地址信息
-    - [x] 具体的地址信息转经纬度坐标
-    - [x] ~~用于单起点到多终点，或多起点到单终点的路线距离（非直线距离）计算~~（目前已停止新用户接入，已接入用户不受影响，推荐使用距离矩阵）
-    - [x] 通过终端设备IP地址获取其当前所在地理位置
-    - [x] 坐标转换
-    - [x] 距离矩阵计算
+    - [x] [地理坐标转具体的地址信息](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
+    - [x] [具体的地址信息转经纬度坐标](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder)
+    - [x] [~~用于单起点到多终点，或多起点到单终点的路线距离（非直线距离）计算~~（目前已停止新用户接入，已接入用户不受影响，推荐使用距离矩阵）](https://lbs.qq.com/service/webService/webServiceGuide/webServiceDistance)
+    - [x] [通过终端设备IP地址获取其当前所在地理位置](https://lbs.qq.com/service/webService/webServiceGuide/webServiceIp)
+    - [x] [坐标转换](https://lbs.qq.com/service/webService/webServiceGuide/webServiceTranslate)
+    - [x] [距离矩阵计算](https://lbs.qq.com/service/webService/webServiceGuide/webServiceMatrix)
     
 ## 模块介绍
 
