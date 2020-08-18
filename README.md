@@ -24,7 +24,7 @@
 - 腾讯地图：
     - [x] [地理坐标转具体的地址信息](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
     - [x] [具体的地址信息转经纬度坐标](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder)
-    - [x] [~~用于单起点到多终点，或多起点到单终点的路线距离（非直线距离）计算~~（目前已停止新用户接入，已接入用户不受影响，推荐使用距离矩阵）](https://lbs.qq.com/service/webService/webServiceGuide/webServiceDistance)
+    - [x] [~~用于单起点到多终点，或多起点到单终点的路线距离（非直线距离）计算~~](https://lbs.qq.com/service/webService/webServiceGuide/webServiceDistance)
     - [x] [通过终端设备IP地址获取其当前所在地理位置](https://lbs.qq.com/service/webService/webServiceGuide/webServiceIp)
     - [x] [坐标转换](https://lbs.qq.com/service/webService/webServiceGuide/webServiceTranslate)
     - [x] [距离矩阵计算](https://lbs.qq.com/service/webService/webServiceGuide/webServiceMatrix)
