@@ -78,22 +78,17 @@ public class TencentLbsUtil {
     /**
      * 用于单起点到多终点，或多起点到单终点的路线距离（非直线距离）计算；
      * 起点到终点最大限制直线距离10公里，一般用于O2O上门服务
+     * ps：批量距离计算（一对多）服务将在2020-05-30停止新用户接入，已接入用户不受影响。
+     * 新用户请使用更强大的 距离矩阵（多对多）服务
      *
      * @param mode 计算方式：driving（驾车）、walking（步行）
      * @param from 起点坐标，例如：39.071510,117.190091
      * @param to   终点坐标，经度与纬度用英文逗号分隔，坐标间用英文分号分隔
      * @return 起点到终点的距离，单位：km
      */
+    @Deprecated
     public static double distance(String mode, String from, String to) {
-        validateParam(mode, from, to);
-        Map<String, Object> param = CollUtil.newHashMap(5);
-        param.put(WebServiceApiConst.MODE, mode);
-        param.put(WebServiceApiConst.FROM, from);
-        param.put(WebServiceApiConst.TO, to);
-        TencentLbsResponseDTO responseDTO = requestToTencentLbs(param, WebServiceUri.DISTANCE_API);
-        if (responseDTO.getStatus() != SUCCESS) {
-            throw new LbsException(responseDTO.getMessage());
-        }
+        TencentLbsResponseDTO responseDTO = getDistanceResponse(mode, from, to, WebServiceUri.DISTANCE_API);
         TencentMapDistanceDTO tencentMapDistanceDTO = BeanUtil.toBean(responseDTO.getResult(), TencentMapDistanceDTO.class);
         List<DistanceDTO> elements = tencentMapDistanceDTO.getElements();
         if (CollUtil.isNotEmpty(elements)) {
@@ -103,6 +98,33 @@ public class TencentLbsUtil {
             return NumberUtil.round(distance, 2).doubleValue();
         }
         return 0.00d;
+    }
+
+    private static TencentLbsResponseDTO getDistanceResponse(String mode, String from, String to, String distanceApi) {
+        validateParam(mode, from, to);
+        Map<String, Object> param = CollUtil.newHashMap(5);
+        param.put(WebServiceApiConst.MODE, mode);
+        param.put(WebServiceApiConst.FROM, from);
+        param.put(WebServiceApiConst.TO, to);
+        TencentLbsResponseDTO responseDTO = requestToTencentLbs(param, distanceApi);
+        if (responseDTO.getStatus() != SUCCESS) {
+            throw new LbsException(responseDTO.getMessage());
+        }
+        return responseDTO;
+    }
+
+    /**
+     * 距离矩阵，用于批量计算一组起终点的路面距离（或称导航距离），可应用于网约车派单、多目的地最优路径智能计算等场景中，
+     * 支持驾车、步行、骑行多种交通方式，满足不同应用需要
+     *
+     * @param mode 计算方式，取值：driving：驾车、walking：步行、bicycling：自行车
+     * @param from 起点坐标，lat,lng[,heading];lat,lng[,heading]，经度与纬度用英文逗号分隔，坐标间用英文分号分隔，heading为车头方向
+     * @param to   终点坐标，lat,lng;lat,lng，经度与纬度用英文逗号分隔，坐标间用英文分号分隔
+     * @return 多点到多点距离计算，结果为二维数组，rows为行，elements为列 结果数组（行），单位：米
+     */
+    public static DistanceMatrixDTO distanceMatrix(String mode, String from, String to) {
+        TencentLbsResponseDTO responseDTO = getDistanceResponse(mode, from, to, WebServiceUri.DISTANCE_MATRIX);
+        return BeanUtil.toBean(responseDTO.getResult(), DistanceMatrixDTO.class);
     }
 
     private static void validateParam(String mode, String from, String to) {

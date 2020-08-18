@@ -21,4 +21,9 @@ public interface WebServiceUri {
      * 坐标转换
      */
     String TRANSLATE = "/ws/coord/v1/translate";
+
+    /**
+     * 距离矩阵
+     */
+    String DISTANCE_MATRIX = "/ws/distance/v1/matrix";
 }

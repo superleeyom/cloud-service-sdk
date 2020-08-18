@@ -1,6 +1,7 @@
 package com.leeyom.sdk.demo.api;
 
 import com.leeyom.sdk.base.ApiResponse;
+import com.leeyom.sdk.tencent.lbs.dto.DistanceMatrixDTO;
 import com.leeyom.sdk.tencent.lbs.dto.IpLocationDTO;
 import com.leeyom.sdk.tencent.lbs.dto.LocationDTO;
 import com.leeyom.sdk.tencent.lbs.dto.TranslateRequestDTO;
@@ -52,6 +53,20 @@ public class TencentLbsTestController {
     @GetMapping("distance")
     public ApiResponse<Double> distance(String mode, String from, String to) {
         return ApiResponse.ofSuccess(TencentLbsUtil.distance(mode, from, to));
+    }
+
+    /**
+     * 距离矩阵，用于批量计算一组起终点的路面距离（或称导航距离），可应用于网约车派单、多目的地最优路径智能计算等场景中，
+     * 支持驾车、步行、骑行多种交通方式，满足不同应用需要
+     *
+     * @param mode 计算方式，取值：driving：驾车、walking：步行、bicycling：自行车
+     * @param from 起点坐标，lat,lng[,heading];lat,lng[,heading]，经度与纬度用英文逗号分隔，坐标间用英文分号分隔，heading为车头方向
+     * @param to   终点坐标，lat,lng;lat,lng，经度与纬度用英文逗号分隔，坐标间用英文分号分隔
+     * @return 多点到多点距离计算，结果为二维数组，rows为行，elements为列 结果数组（行）
+     */
+    @GetMapping("distanceMatrix")
+    public ApiResponse<DistanceMatrixDTO> distanceMatrix(String mode, String from, String to) {
+        return ApiResponse.ofSuccess(TencentLbsUtil.distanceMatrix(mode, from, to));
     }
 
     /**
