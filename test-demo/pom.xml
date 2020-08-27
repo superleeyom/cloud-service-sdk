@@ -13,7 +13,7 @@
     <description>示例项目</description>
 
     <properties>
-        <javamelody.version>1.83.0</javamelody.version>
+        <javamelody.version>1.85.0</javamelody.version>
     </properties>
     <dependencies>
         <!-- boot组件 -->
