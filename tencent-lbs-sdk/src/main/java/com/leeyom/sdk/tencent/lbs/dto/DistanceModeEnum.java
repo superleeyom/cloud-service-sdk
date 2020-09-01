@@ -7,10 +7,14 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum DistanceModeEnum {
 
-
+    /**
+     * 驾车
+     */
     DRIVING("driving", "驾车"),
 
-
+    /**
+     * 步行
+     */
     WALKING("walking", "步行");
 
     /**

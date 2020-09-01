@@ -20,18 +20,18 @@ public interface AliSmsConst {
         /**
          * 单个发送短信
          */
-        String SendSms = "SendSms";
+        String SEND_SMS = "SendSms";
 
         /**
          * 批量发送短信
          */
-        String SendBatchSms = "SendBatchSms";
+        String SEND_BATCH_SMS = "SendBatchSms";
 
     }
 
     /**
      * 阿里短信API版本号
      */
-    String SysVersion = "2017-05-25";
+    String SYS_VERSION = "2017-05-25";
 
 }

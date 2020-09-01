@@ -98,7 +98,7 @@ public class AliOssUtil {
         policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, aliOssProperties.getFileDir());
 
         // 设置预签名的上传url的过期时间为1小时
-        Date expiration = new Date(new Date().getTime() + 3600 * 1000);
+        Date expiration = new Date(System.currentTimeMillis() + 3600 * 1000);
         String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
         byte[] binaryData = postPolicy.getBytes(StandardCharsets.UTF_8);
         String encodedPolicy = BinaryUtil.toBase64String(binaryData);
@@ -311,32 +311,32 @@ public class AliOssUtil {
      * @return ContentType
      */
     private static String getContentType(String fileSuffix) {
-        if (fileSuffix.equalsIgnoreCase(".bmp")) {
+        if ("bmp".equalsIgnoreCase(fileSuffix)) {
             return "image/bmp";
         }
-        if (fileSuffix.equalsIgnoreCase(".gif")) {
+        if ("gif".equalsIgnoreCase(fileSuffix)) {
             return "image/gif";
         }
-        if (fileSuffix.equalsIgnoreCase(".jpeg") || fileSuffix.equalsIgnoreCase(".jpg")
-                || fileSuffix.equalsIgnoreCase(".png")) {
+        if ("jpeg".equalsIgnoreCase(fileSuffix) || "jpg".equalsIgnoreCase(fileSuffix)
+                || "png".equalsIgnoreCase(fileSuffix)) {
             return "image/jpeg";
         }
-        if (fileSuffix.equalsIgnoreCase(".html")) {
+        if ("html".equalsIgnoreCase(fileSuffix)) {
             return "text/html";
         }
-        if (fileSuffix.equalsIgnoreCase(".txt")) {
+        if ("txt".equalsIgnoreCase(fileSuffix)) {
             return "text/plain";
         }
-        if (fileSuffix.equalsIgnoreCase(".vsd")) {
+        if ("vsd".equalsIgnoreCase(fileSuffix)) {
             return "application/vnd.visio";
         }
-        if (fileSuffix.equalsIgnoreCase(".pptx") || fileSuffix.equalsIgnoreCase(".ppt")) {
+        if ("pptx".equalsIgnoreCase(fileSuffix) || "ppt".equalsIgnoreCase(fileSuffix)) {
             return "application/vnd.ms-powerpoint";
         }
-        if (fileSuffix.equalsIgnoreCase(".docx") || fileSuffix.equalsIgnoreCase(".doc")) {
+        if ("docx".equalsIgnoreCase(fileSuffix) || "doc".equalsIgnoreCase(fileSuffix)) {
             return "application/msword";
         }
-        if (fileSuffix.equalsIgnoreCase(".xml")) {
+        if ("xml".equalsIgnoreCase(fileSuffix)) {
             return "text/xml";
         }
         return "image/jpeg";

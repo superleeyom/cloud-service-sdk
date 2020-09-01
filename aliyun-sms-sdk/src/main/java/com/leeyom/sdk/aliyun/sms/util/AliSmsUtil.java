@@ -66,8 +66,8 @@ public class AliSmsUtil {
         CommonRequest request = new CommonRequest();
         request.setSysMethod(MethodType.POST);
         request.setSysDomain(AliSmsConst.DOMAIN);
-        request.setSysVersion(AliSmsConst.SysVersion);
-        request.setSysAction(AliSmsConst.SysAction.SendSms);
+        request.setSysVersion(AliSmsConst.SYS_VERSION);
+        request.setSysAction(AliSmsConst.SysAction.SEND_SMS);
         request.putQueryParameter("RegionId", aliSmsProperties.getRegionId());
         request.putQueryParameter("PhoneNumbers", phoneNum);
         request.putQueryParameter("SignName", signName);
@@ -98,8 +98,8 @@ public class AliSmsUtil {
         CommonRequest request = new CommonRequest();
         request.setSysMethod(MethodType.POST);
         request.setSysDomain(AliSmsConst.DOMAIN);
-        request.setSysVersion(AliSmsConst.SysVersion);
-        request.setSysAction(AliSmsConst.SysAction.SendBatchSms);
+        request.setSysVersion(AliSmsConst.SYS_VERSION);
+        request.setSysAction(AliSmsConst.SysAction.SEND_BATCH_SMS);
         request.putQueryParameter("RegionId", aliSmsProperties.getRegionId());
         request.putQueryParameter("PhoneNumberJson", JSONUtil.toJsonStr(phoneNumber));
         request.putQueryParameter("SignNameJson", JSONUtil.toJsonStr(signName));
