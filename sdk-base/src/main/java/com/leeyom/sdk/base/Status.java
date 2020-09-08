@@ -2,6 +2,8 @@ package com.leeyom.sdk.base;
 
 import lombok.Getter;
 
+import java.util.stream.Stream;
+
 /**
  * 通用状态码
  *
@@ -104,15 +106,8 @@ public enum Status implements IStatus {
         this.message = message;
     }
 
-    public static Status fromCode(Integer code) {
-        Status[] statuses = Status.values();
-        for (Status status : statuses) {
-            if (status.getCode()
-                    .equals(code)) {
-                return status;
-            }
-        }
-        return SUCCESS;
+    public static Status getStatusByCode(Integer code) {
+        return Stream.of(Status.values()).filter(item -> item.getCode().equals(code)).findFirst().orElse(SUCCESS);
     }
 
     @Override
