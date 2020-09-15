@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -185,8 +186,41 @@ public class TencentCosUtil {
         } catch (CosClientException e) {
             log.error("文件上传失败，客户端异常：", e);
         }
+        return getFileUrl(key);
+    }
+
+    private static String getFileUrl(String key) {
+        if (StrUtil.isNotBlank(tencentCosProperties.getDomain())) {
+            return tencentCosProperties.getDomain() + key;
+        }
         String endpoint = "cos." + tencentCosProperties.getRegion() + ".myqcloud.com";
         return "https://" + tencentCosProperties.getBucketName() + "." + endpoint + "/" + key;
+    }
+
+    /**
+     * 流式上传
+     *
+     * @param file 文件域
+     * @return 上传成功后的访问url
+     */
+    public static String upload2Cos(File file) {
+        if (file == null) {
+            throw new BizException("文件不能为空");
+        }
+        if (!file.exists()) {
+            throw new BizException("文件不存在");
+        }
+        String fileSuffix = validateFileName(file.getName());
+        String key = tencentCosProperties.getDir() + IdUtil.simpleUUID() + fileSuffix;
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(tencentCosProperties.getBucketName(), key, file);
+            client.putObject(putObjectRequest);
+        } catch (CosServiceException e) {
+            log.error("文件上传失败，服务端异常：", e);
+        } catch (CosClientException e) {
+            log.error("文件上传失败，客户端异常：", e);
+        }
+        return getFileUrl(key);
     }
 
     /**

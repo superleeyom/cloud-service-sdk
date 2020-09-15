@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+
 /**
  * 腾讯云对象存储示例
  *
@@ -49,6 +51,18 @@ public class TencentCosTestController {
      */
     @PostMapping("uploadFile")
     public ApiResponse<UploadImageUrlVO> uploadFile(MultipartFile file) {
+        String url = TencentCosUtil.upload2Cos(file);
+        return ApiResponse.ofSuccess(UploadImageUrlVO.builder().imageUrl(url).build());
+    }
+
+    /**
+     * 流式上传
+     *
+     * @return 图片url信息
+     */
+    @GetMapping("uploadLocalFile")
+    public ApiResponse<UploadImageUrlVO> uploadLocalFile() {
+        File file = new File("/Users/leeyom/Pictures/头像/default.jpg");
         String url = TencentCosUtil.upload2Cos(file);
         return ApiResponse.ofSuccess(UploadImageUrlVO.builder().imageUrl(url).build());
     }
