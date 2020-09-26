@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tencent-cos-sdk</artifactId>
+    <name>腾讯云对象存储</name>
     <packaging>jar</packaging>
     <description>腾讯云cos对象存储sdk封装</description>
     <version>0.0.1-SNAPSHOT</version>

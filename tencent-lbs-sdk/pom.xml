@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tencent-lbs-sdk</artifactId>
+    <name>腾讯地图web接口</name>
     <packaging>jar</packaging>
     <description>腾讯地图 WebServiceAPI sdk 封装</description>
     <version>0.0.1-SNAPSHOT</version>

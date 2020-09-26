@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>aliyun-sms-sdk</artifactId>
+    <name>阿里云短信服务</name>
     <packaging>jar</packaging>
     <description>阿里云短信sdk封装</description>
     <version>0.0.1-SNAPSHOT</version>
