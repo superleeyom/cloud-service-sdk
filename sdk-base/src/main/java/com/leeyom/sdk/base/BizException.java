@@ -11,24 +11,25 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class BizException extends BaseException {
-    public BizException(Status status) {
+
+    public BizException(IStatus status) {
         super(status);
     }
 
-    public BizException(Status status, Object data) {
+    public BizException(IStatus status, Object data) {
         super(status, data);
     }
 
-    public BizException(Status status,  String message) {
-        super(status, message);
+    public BizException(Integer code, String message) {
+        super(code, message);
     }
 
     public BizException(String message) {
         super(message);
     }
 
-    public BizException(Integer code, String message) {
-        super(code, message);
+    public BizException(IStatus status, String message) {
+        super(status, message);
     }
 
     public BizException(Integer code, String message, Object data) {
