@@ -117,7 +117,7 @@ public class ApiResponse<T> implements Serializable {
      * @return ApiResponse
      */
     public static <T> ApiResponse<T> ofStatus(Status status) {
-        return ofStatus(status, null);
+        return ofStatus(status, status.getMessage());
     }
 
     /**
