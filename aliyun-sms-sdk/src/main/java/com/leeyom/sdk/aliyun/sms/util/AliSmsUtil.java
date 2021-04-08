@@ -7,11 +7,9 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.aliyuncs.CommonRequest;
 import com.aliyuncs.CommonResponse;
-import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
-import com.aliyuncs.profile.DefaultProfile;
 import com.leeyom.sdk.aliyun.sms.config.AliSmsConst;
 import com.leeyom.sdk.aliyun.sms.config.AliSmsProperties;
 import com.leeyom.sdk.base.BizException;
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
@@ -41,15 +38,9 @@ public class AliSmsUtil {
         AliSmsUtil.aliSmsProperties = aliSmsProperties;
     }
 
-    @PostConstruct
-    private void init() {
-        try {
-            DefaultProfile profile = DefaultProfile.getProfile(aliSmsProperties.getRegionId(),
-                    aliSmsProperties.getAccessKeyId(), aliSmsProperties.getAccessKeySecret());
-            client = new DefaultAcsClient(profile);
-        } catch (Exception e) {
-            log.error("阿里云短信客户端初始化失败，请确认相关配置文件是否正确");
-        }
+    @Autowired
+    public void setClient(IAcsClient client) {
+        AliSmsUtil.client = client;
     }
 
     /**

@@ -7,7 +7,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.*;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,14 +45,9 @@ public class AliOssUtil {
         AliOssUtil.aliOssProperties = aliOssProperties;
     }
 
-    @PostConstruct
-    private void init() {
-        try {
-            ossClient = new OSSClientBuilder().build(aliOssProperties.getEndpoint(),
-                    aliOssProperties.getAccessKeyId(), aliOssProperties.getAccessKeySecret());
-        } catch (Exception e) {
-            log.error("阿里云oss客户端初始化失败，请确认您填写的阿里云oss配置是否正确！！！");
-        }
+    @Autowired
+    public void setOssClient(OSS ossClient) {
+        AliOssUtil.ossClient = ossClient;
     }
 
     /**

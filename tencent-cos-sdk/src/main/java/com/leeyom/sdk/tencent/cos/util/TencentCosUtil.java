@@ -10,23 +10,18 @@ import com.leeyom.sdk.tencent.cos.config.TencentCosProperties;
 import com.leeyom.sdk.tencent.cos.dto.TencentCosPreSignPostDTO;
 import com.leeyom.sdk.tencent.cos.dto.TencentCosPreSignPutDTO;
 import com.qcloud.cos.COSClient;
-import com.qcloud.cos.ClientConfig;
-import com.qcloud.cos.auth.BasicCOSCredentials;
-import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.auth.COSSigner;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.region.Region;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,15 +47,9 @@ public class TencentCosUtil {
     public void setTencentCosProperties(TencentCosProperties tencentCosProperties) {
         TencentCosUtil.tencentCosProperties = tencentCosProperties;
     }
-
-    @PostConstruct
-    private void init() {
-        // 1 初始化用户身份信息
-        COSCredentials cred = new BasicCOSCredentials(tencentCosProperties.getSecretId(), tencentCosProperties.getSecretKey());
-        // 2 设置bucket的区域
-        ClientConfig clientConfig = new ClientConfig(new Region(tencentCosProperties.getRegion()));
-        // 3 生成cos客户端
-        client = new COSClient(cred, clientConfig);
+    @Autowired
+    public void setClient(COSClient client) {
+        TencentCosUtil.client = client;
     }
 
     /**
