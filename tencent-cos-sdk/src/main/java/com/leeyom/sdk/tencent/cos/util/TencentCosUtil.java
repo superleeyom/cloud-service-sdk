@@ -48,8 +48,8 @@ public class TencentCosUtil {
         TencentCosUtil.tencentCosProperties = tencentCosProperties;
     }
     @Autowired
-    public void setClient(COSClient client) {
-        TencentCosUtil.client = client;
+    public void setClient(COSClient cosClient) {
+        TencentCosUtil.client = cosClient;
     }
 
     /**
