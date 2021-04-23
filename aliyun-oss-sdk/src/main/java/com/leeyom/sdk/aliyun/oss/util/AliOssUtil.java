@@ -99,7 +99,7 @@ public class AliOssUtil {
 
         // 构建直传策略
         AliyunOssPolicy policy = new AliyunOssPolicy();
-        policy.setAccessKeyId(aliOssProperties.getAccessKeyId());
+        policy.setOssAccessKeyId(aliOssProperties.getAccessKeyId());
         policy.setPolicy(encodedPolicy);
         policy.setSignature(postSignature);
         policy.setHost("https://" + aliOssProperties.getBucketName() + "." + aliOssProperties.getEndpoint());

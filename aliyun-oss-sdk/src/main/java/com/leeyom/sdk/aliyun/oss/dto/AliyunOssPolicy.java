@@ -9,7 +9,7 @@ import lombok.Data;
  * 请求的参数如下body格式如下：
  * <p>
  * {
- * "OSSAccessKeyId": "xxx",
+ * "ossAccessKeyId": "xxx",
  * "policy":"xxx",
  * "Signature":"xxx",
  * "key":"xxx",
@@ -28,7 +28,7 @@ public class AliyunOssPolicy {
     /**
      * 访问身份验证中用到用户标识
      */
-    private String accessKeyId;
+    private String ossAccessKeyId;
     /**
      * 用户表单上传的策略,经过base64编码过的字符串
      */

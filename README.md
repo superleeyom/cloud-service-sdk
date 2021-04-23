@@ -84,3 +84,79 @@ public ApiResponse<LocationDTO> addressToLocation(String address) {
 }
 ```
 更多具体示例，可以参考示例项目：`test-demo`
+
+## 注意事项
+
+### 阿里云OSS前端直传
+
+这里需要注意下，实际前端直传的时候，请求的 content-type 为 form-data，请求方式为 post，前端先调用后台接口：`http://localhost:8080/demo/aliyunOss/getOssPolicy` （先启动示例项目：`test-demo`），获取直传策略参数，返回的示例：
+```json5
+{
+  "code": 200,
+  "message": "操作成功！",
+  "data": {
+    "aliyunOssPolicy": {
+      // Bucket拥有者的AccessKey Id     
+      "ossAccessKeyId": "xxx",
+      // Policy规定了请求表单域的合法性
+      "policy": "xxx",
+      // 根据AccessKeySecret和Policy计算的签名信息      
+      "signature": "xxx",
+      // 前端直传的请求链接
+      "host": "https://xxx.oss-cn-beijing.aliyuncs.com",
+      // 上传Object的名称。如果名称包含路径，例如destfolder/example.jpg
+      "key": "xxx/xxx.jpg"
+    },
+    // 前端上传完后，文件实际的访问地址，把这个地址告诉给后台
+    "fileUrl": "http://xxx.oss-cn-beijing.aliyuncs.com/xxx/xxx.jpg"
+  }
+}
+```
+拿到直传参数后，前端正式向阿里云发起上传请求（host字段指定的域名），这里 postman 示例：
+![](http://image.leeyom.top/blog/20210423170409.png)
+注意：**file必须是表单中的最后一个域！**，具体的可以[参考官方的文档](https://help.aliyun.com/document_detail/31988.html?spm=a2c4g.11186623.6.1497.59c06611TqgjXe)
+
+### 腾讯云COS前端直传
+
+#### put方式
+
+请求后台接口：`http://localhost:8080/demo/tencentCos/getPreSignedUrlForPut` （先启动示例项目：`test-demo`）拿到预签名地址 `preSignUrl`：
+```json5
+{
+  "code": 200,
+  "message": "操作成功！",
+  "data": {
+    // 前端直传的请求链接
+    "preSignUrl": "https://retail-cos.aqara.cn/retail_image_fat/e5809dfe63b94ebba89fb20749d74f62.jpg?xxx",
+    // 前端上传完后，文件实际的访问地址，把这个地址告诉给后台
+    "fileUrl": "https://xxx/retail_image_fat/e5809dfe63b94ebba89fb20749d74f62.jpg"
+  }
+}
+```
+前端拿到预签名地址后，发起 put 上传请求，将文件域放到`binary`里面，postman示例如下：
+![](http://image.leeyom.top/blog/20210423174115.png)
+然后将 `fileUrl` 回传给后台即可！
+
+#### post方式
+
+post方式其实跟阿里云OSS处理方式一样，后台返回直传策略参数，然后前端 post直接发起上传请求，请求后台接口：`http://localhost:8080/demo/tencentCos/getPreSignedUrlForPost `，返回策略参数：
+```json5
+{
+  "code": 200,
+  "message": "操作成功！",
+  "data": {
+    "formFields": {
+      "q-sign-algorithm": "sha1",
+      "q-ak": "xx",
+      "q-signature": "xx",
+      "q-key-time": "xx",
+      "key": "xxx",
+      "policy": "xxx"
+    },
+    "preSignUrl": "https://xxx.cn",
+    "fileUrl": "https:/xxx.cn/retail_image_fat/7dca24d58ac24e8894a6b65c91df8042.jpg"
+  }
+}
+```
+`formFields`里面的数据就是直传策略参数，拿到直传策略参数后，前端再次发起post请求，请求的 content-type 为 form-data，postman 示例如下：
+![](http://image.leeyom.top/blog/20210423175344.png)
